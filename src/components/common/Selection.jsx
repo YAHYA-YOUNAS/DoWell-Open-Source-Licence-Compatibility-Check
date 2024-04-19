@@ -1,14 +1,18 @@
-import React from 'react'
+import React from 'react';
 
-function Selection({title}) {
+function Selection({title, data, selectedValue, onSelectChange}) {
+
   return (
-    <select className="select-color border border-slate-500 rounded-md p-2 font-roboto focus:outline-none focus:shadow-inner" name="selection1" id="select1">
+    <select className="select-color border border-slate-500 rounded-md p-2 font-roboto focus:outline-none focus:shadow-inner" 
+      name="selection" 
+      id="selection" 
+      value={selectedValue}
+      onChange={(event) => onSelectChange(event.target.value)} 
+      required={true}>
         <option value={title} defaultValue="selected">{title}</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
+        {data.map((license) => (
+          <option key={license._id} value={license.softwarelicense.license_name}>{license.softwarelicense.license_name}</option>
+        ))}
     </select>
   )
 }
