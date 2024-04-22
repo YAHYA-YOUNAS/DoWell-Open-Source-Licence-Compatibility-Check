@@ -4,6 +4,7 @@ import Input from './Input'
 import Button from './Button'
 import Message from './Message'
 import Confirmation from './Confirmation'
+import Modal from './Modal'
 
 function Form({passProps}) {
   const [data, setData] = useState([]);
@@ -12,7 +13,8 @@ function Form({passProps}) {
   const [email, setEmail] = useState('');
   const [occurrences, setOccurrences] = useState(null);
   const [showMessage, setShowMessage] = useState(false);
-  const [registration, setRegistration] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [invokeCheckBtn, setInvokeCheckBtn] = useState(false);
   const [validationError, setValidationError] = useState('');
   const hasFetchedData = useRef(false);
 
@@ -152,7 +154,7 @@ function Form({passProps}) {
     const handleRegistration = async () => {
       if (occurrences === 0) {
         await registerUser();
-        setRegistration(true);
+        setInvokeCheckBtn(true);
       }
     };
   
@@ -187,7 +189,7 @@ function Form({passProps}) {
   
   const handleYesClick = (event) => {
     event.preventDefault();
-    TODO
+    setShowModal(true)
   }
 
   return (
@@ -203,11 +205,11 @@ function Form({passProps}) {
             <Button type="button" classes="btn-red" name="Close" onButtonClick={handleCloseClick}/>
             <Button type="button" classes="btn-yellow" name="Reset" onButtonClick={handleResetClick}/>
 
-            {(occurrences === null || occurrences === 0) && (registration === false) &&
+            {(occurrences === null || occurrences === 0) && (invokeCheckBtn === false) &&
               <Button type="submit" classes="btn-green" name="Experience" showIcon="experience" onButtonClick={handleExperienceClick}/>
             }
 
-            {(occurrences >= 1 && occurrences <= 6 || registration) &&
+            {(occurrences >= 1 && occurrences <= 6 || invokeCheckBtn) &&
               <Button type="submit" classes="btn-green" name="Check" showIcon="check" onButtonClick={handleCheckClick}/>
             }
 
@@ -216,10 +218,11 @@ function Form({passProps}) {
             }
 
         </div>
+      
+        {occurrences >=4 && <Confirmation message="Do you have a coupon?" handleYesClick={handleYesClick}/> }
 
-        {occurrences >=4 &&
-          <Confirmation message="Do you have a coupon?" handleYesClick={handleYesClick}/>
-        }
+        {showModal ? <Modal email={email} setInvokeCheckBtn={setInvokeCheckBtn} setShowModal={setShowModal} /> : null}
+        
     </form>
   )
 }

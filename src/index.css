@@ -65,3 +65,9 @@ h6 {
     padding: 3px 10px;
     font-weight: normal;
 }
+
+.btn-lightred{
+    background-color: #ec3e3e;
+    padding: 3px 10px;
+    font-weight: normal;
+}

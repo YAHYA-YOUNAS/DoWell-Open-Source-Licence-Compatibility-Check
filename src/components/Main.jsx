@@ -15,7 +15,7 @@ function Main({handleTryAgainClick}) {
   const updateUserUsageUrl = process.env.REACT_APP_UPDATE_USER_USAGE_URL
 
   // Function to check compatibility from the API
-  const fetchCheckCompatibility = async (firstLicenseEventId, secondLicenseEventId) => {
+  const checkCompatibility = async (firstLicenseEventId, secondLicenseEventId) => {
     try {
       const response = await fetch(licencesApiUrl, {
         method: 'POST',
@@ -42,7 +42,7 @@ function Main({handleTryAgainClick}) {
   };
 
   // Function to update user usage from the API
-  const fetchUpdateUserUsage = async (email, occurrences) => {
+  const updateUserUsage = async (email, occurrences) => {
     try {
       const response = await fetch(updateUserUsageUrl + email + '&occurrences=' +  occurrences, {
         method: 'GET',
@@ -59,8 +59,8 @@ function Main({handleTryAgainClick}) {
 
   const passProps = (email, firstLicenseEventId, secondLicenseEventId, occurrences) => {
     setEmail(email);
-    fetchCheckCompatibility(firstLicenseEventId, secondLicenseEventId);
-    fetchUpdateUserUsage(email, occurrences+1);
+    checkCompatibility(firstLicenseEventId, secondLicenseEventId);
+    updateUserUsage(email, occurrences+1);
   }
   
   return (
