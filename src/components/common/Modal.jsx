@@ -2,41 +2,12 @@ import React, { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import Message from "./Message";
+import { redeemCoupon } from '../../apiCalls';
 
 function Modal({email, setInvokeCheckBtn, setShowModal}) {
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
-
-    const redeemCouponUrl = process.env.REACT_APP_REDEEM_COUPON_URL;
-    const productNumber = process.env.REACT_APP_PRODUCT_NUMBER;
-
-    // Redeem coupon from the API
-    const redeemCoupon = async () => {
-        try {
-            const response = await fetch(redeemCouponUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email,
-                    coupon : code,
-                    product_number : productNumber
-                }),
-            });
-            if (!response.ok && response.status !== 401) {
-                throw new Error(`API request failed with status ${response.status}`);
-            }
-            const jsonData = await response.json();
-            if (jsonData.success) {
-                setMessage(jsonData.message);
-                setInvokeCheckBtn(true)
-            } else {
-                setError(jsonData.message)
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
 
     const handleInput = (value) => {
         setCode(value);
@@ -48,7 +19,13 @@ function Modal({email, setInvokeCheckBtn, setShowModal}) {
             setError('Please enter your coupon code')
         } else {
             setError('');
-            redeemCoupon();
+            const response = redeemCoupon(email, code);
+            if (response) {
+                setMessage(jsonData.message);
+                setInvokeCheckBtn(true)
+            } else {
+                setError(jsonData.message)
+            }
         }
     }
 

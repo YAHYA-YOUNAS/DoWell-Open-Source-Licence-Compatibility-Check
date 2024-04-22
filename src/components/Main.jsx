@@ -1,65 +1,18 @@
 import React, { useState } from 'react'
-import Image from './common/Image'
-import Form from './common/Form'
-import Button from './common/Button'
 import Result from './Result'
+import Form from './common/Form'
+import Image from './common/Image'
+import Button from './common/Button'
+import { checkCompatibility, updateUserUsage } from '../apiCalls';
 
 function Main({handleTryAgainClick}) {
   const [data, setData] = useState(null);
   const [email, setEmail] = useState('');
 
-  const licencesApiUrl = process.env.REACT_APP_LICENSES_API_URL;
-  const licenseApiKey = process.env.REACT_APP_LICENSES_API_KEY;
-  const userId = process.env.REACT_APP_USER_ID
-  const organizationId = process.env.REACT_APP_ORGANIZATION_ID
-  const updateUserUsageUrl = process.env.REACT_APP_UPDATE_USER_USAGE_URL
-
-  // Function to check compatibility from the API
-  const checkCompatibility = async (firstLicenseEventId, secondLicenseEventId) => {
-    try {
-      const response = await fetch(licencesApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + licenseApiKey
-        },
-        body: JSON.stringify({
-          action_type: "check-compatibility",
-          license_event_id_one: firstLicenseEventId,
-          license_event_id_two: secondLicenseEventId,
-          user_id: userId,                                            
-          organization_id: organizationId
-        })
-      });
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-      const jsonData = await response.json();
-      setData(jsonData);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  // Function to update user usage from the API
-  const updateUserUsage = async (email, occurrences) => {
-    try {
-      const response = await fetch(updateUserUsageUrl + email + '&occurrences=' +  occurrences, {
-        method: 'GET',
-      });
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-      const jsonData = await response.json();
-      console.log(jsonData);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  const passProps = (email, firstLicenseEventId, secondLicenseEventId, occurrences) => {
+  const passProps = async (email, firstLicenseEventId, secondLicenseEventId, occurrences) => {
     setEmail(email);
-    checkCompatibility(firstLicenseEventId, secondLicenseEventId);
+    const jsonData = await checkCompatibility(firstLicenseEventId, secondLicenseEventId);
+    setData(jsonData);
     updateUserUsage(email, occurrences+1);
   }
   

@@ -1,7 +1,6 @@
 import React from 'react';
 
 function Selection({title, data, selectedValue, onSelectChange}) {
-
   return (
     <select className="select-color border border-slate-500 rounded-md p-2 font-roboto focus:outline-none focus:shadow-inner" 
       name="selection" 
