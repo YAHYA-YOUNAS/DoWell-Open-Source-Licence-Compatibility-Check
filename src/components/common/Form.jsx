@@ -53,6 +53,20 @@ function Form({passProps}) {
     } 
   }, []);
 
+  // Handle registration when user visits first time
+  useEffect(() => {
+    const handleRegistration = async () => {
+      if (occurrences === 0) {
+        await registerUser();
+        setInvokeCheckBtn(true);
+      }
+    };
+  
+    if (occurrences !== null) {
+      handleRegistration();
+    }
+  }, [occurrences]);
+
   // Validate user email from the API
   const validateEmail = async () => {
     try {
@@ -149,20 +163,6 @@ function Form({passProps}) {
     setEmail('');
   }
 
-  // Handle registration when user visits first time
-  useEffect(() => {
-    const handleRegistration = async () => {
-      if (occurrences === 0) {
-        await registerUser();
-        setInvokeCheckBtn(true);
-      }
-    };
-  
-    if (occurrences !== null) {
-      handleRegistration();
-    }
-  }, [occurrences]);
-
   const handleExperienceClick = async (event) => {
     event.preventDefault();
     setValidationError('');
@@ -198,8 +198,8 @@ function Form({passProps}) {
         <Selection title="Select Second License" selectedValue={secondSelection} data={data} onSelectChange={handleSecondSelection}/>
         <Input type="email" inputValue={email} name="email" id="email" placeholder="Enter your email address" onInputChange={handleInput} />
         
-        {showMessage && <Message textColor="text-black" message={`You have used open source license ${occurrences} times`}/> }
-        {validationError && <Message textColor="text-red-500" message={validationError}/> }
+        {showMessage && <Message classes="text-black" message={`You have used open source license ${occurrences} times`}/> }
+        {validationError && <Message classes="text-red-500" message={validationError}/> }
 
         <div className="flex flex-wrap justify-center md:flex-row md:gap-3 mx-auto">
             <Button type="button" classes="btn-red" name="Close" onButtonClick={handleCloseClick}/>

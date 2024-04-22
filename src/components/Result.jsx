@@ -1,14 +1,14 @@
 import React from 'react'
+import Scale from './Scale';
 import Confirmation from './common/Confirmation';
 
 function Result({data, email}) {
 
   const sendEmailUrl = process.env.REACT_APP_SEND_EMAIL_URL;
-  const name = process.env.REACT_APP_EMAIL_NAME
-  const fromName = process.env.REACT_APP_EMAIL_FROM_NAME
-  const fromEmail = process.env.REACT_APP_EMAIL_FROM_EMAIL
-  const subject = process.env.REACT_APP_EMAIL_SUBJECT
-  // const uxlivinglabUrl = process.env.REACT_APP_UXLIVINGLAB_URL;
+  const name = process.env.REACT_APP_EMAIL_NAME;
+  const fromName = process.env.REACT_APP_EMAIL_FROM_NAME;
+  const fromEmail = process.env.REACT_APP_EMAIL_FROM_EMAIL;
+  const subject = process.env.REACT_APP_EMAIL_SUBJECT;
 
   // Function to send email from the API
   const fetchSendEmail = async (emailBody) => {
@@ -46,7 +46,6 @@ function Result({data, email}) {
     //   <head>
     //     <meta charset="UTF-8" />
     //     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    //     <script src="https://cdn.tailwindcss.com"></script>
     //     <title>Open Source License Compatibility</title>
     //   </head>
     //   <body>
@@ -160,7 +159,7 @@ function Result({data, email}) {
   }
 
   return (
-    <div id="results" className="w-full font-poppins p-5 mt-10 rounded">
+    <div id="results" className="w-full font-poppins p-5 mt-5 rounded">
       <h1 className="text-lg text-center md:text-xl mb-5">Compatibility level between <span style={{color: '#D6BB41'}}>{data.license_1.license_name}</span> and <span style={{color: '#D6BB41'}}>{data.license_2.license_name}</span></h1>
       <h2 className="text-center text-3xl">{data.percentage_of_compatibility}%</h2>
       <h2 className="text-center text-xl font-bold my-3">
@@ -173,6 +172,8 @@ function Result({data, email}) {
       <h2 className="text-center md:text-xl my-5">Compatibility Check By Dowell UX Livinglab</h2>
 
       <Confirmation message="Do you want to mail this?" handleYesClick={handleYesClick}/>
+
+      <Scale/>
     </div>
   )
 }

@@ -65,7 +65,7 @@ function Modal({email, setInvokeCheckBtn, setShowModal}) {
                     <h3 className="text-xl md:text-3xl font-semibold text-center pt-5">Redeem Coupon</h3>
                     <h3 className="text-center pt-5 font-light mb-2">Enter Coupon Code:</h3>
 
-                    {message && <Message textColor="text-green-500" message={`Congratulations! ${message}`}/> }
+                    {message && <Message classes="text-green-500" message={`Congratulations! ${message}`}/> }
 
                     {error && <h3 className="text-center text-sm pt-5 font-bold text-red-500">{error}</h3> }
                     
