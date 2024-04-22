@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Selection from './Selection'
 import Input from './Input'
 import Button from './Button'
 import Message from './Message'
+import Confirmation from './Confirmation'
 
 function Form({passProps}) {
   const [data, setData] = useState([]);
@@ -10,8 +11,10 @@ function Form({passProps}) {
   const [secondSelection, setSecondSelection] = useState('');
   const [email, setEmail] = useState('');
   const [occurrences, setOccurrences] = useState(null);
-  const [clicked, setClicked] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [registration, setRegistration] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const hasFetchedData = useRef(false);
 
   const licencesApiUrl = process.env.REACT_APP_LICENSES_API_URL;
   const licenseApiKey = process.env.REACT_APP_LICENSES_API_KEY;
@@ -21,8 +24,8 @@ function Form({passProps}) {
   const productNumber = process.env.REACT_APP_PRODUCT_NUMBER;
   
 
-  // Function to fetch licenses from the API
-  const fetchLicenses = async () => {
+  // Get all licenses from the API
+  const getLicenses = async () => {
     try {
       const response = await fetch(licencesApiUrl, {
         method: 'GET',
@@ -34,31 +37,22 @@ function Form({passProps}) {
         throw new Error(`API request failed with status ${response.status}`);
       }
       const jsonData = await response.json();
-      setData(jsonData.data.sort((a, b) => a.softwarelicense.license_name.localeCompare(b.softwarelicense.license_name)));
+      const sortedData = jsonData.data.sort((a, b) => a.softwarelicense.license_name.localeCompare(b.softwarelicense.license_name));
+      setData(sortedData);
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  // Function to fetch user email info from the API
-  const fetchUserEmailInfo = async () => {
-    try {
-      const response = await fetch(userEmailInfoUrl + email, {
-        method: 'GET',
-      });
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-      const jsonData = await response.json();
-      setOccurrences(jsonData.occurrences);
-      setClicked(true);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  useEffect(() => {
+    if (hasFetchedData.current === false) {         // to avoid API call twice
+      getLicenses();
+      hasFetchedData.current = true;
+    } 
+  }, []);
 
-  // Function to validate user email from the API
-  const fetchValidateEmail = async () => {
+  // Validate user email from the API
+  const validateEmail = async () => {
     try {
       const response = await fetch(validateEmailUrl, {
         method: 'POST',
@@ -77,7 +71,7 @@ function Form({passProps}) {
       }
       const jsonData = await response.json();
       if (jsonData.success) {
-        fetchUserEmailInfo();
+        return jsonData.success;
       } else {
         setValidationError(jsonData.message)
       }
@@ -86,8 +80,25 @@ function Form({passProps}) {
     }
   };
 
-  // Function to register an user from the API
-  const fetchRegisterUser = async () => {
+  // Get user email info from the API
+  const getUserEmailInfo = async () => {
+    try {
+      const response = await fetch(userEmailInfoUrl + email, {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      const jsonData = await response.json();
+      setOccurrences(jsonData.occurrences);
+      setShowMessage(true);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // Register an user from the API
+  const registerUser = async () => {
     try {
       const response = await fetch(registerUserUrl, {
         method: 'POST',
@@ -102,7 +113,7 @@ function Form({passProps}) {
       }
       const jsonData = await response.json();
       if (response.status === 201) {
-        console.log("Registered");
+        console.log("User Registered");
       } else {
         console.log(jsonData.message);
       }
@@ -111,17 +122,12 @@ function Form({passProps}) {
     }
   };
 
-  useEffect(() => {
-    fetchLicenses();
-  }, []);
-
-
-  const handleFirstSelection = (value) => {
-    setFirstSelection(value);
+  const handleFirstSelection = (eventId) => {
+    setFirstSelection(eventId);
   };
 
-  const handleSecondSelection = (value) => {
-    setSecondSelection(value);
+  const handleSecondSelection = (eventId) => {
+    setSecondSelection(eventId);
   };
 
   const handleInput = (value) => {
@@ -130,8 +136,6 @@ function Form({passProps}) {
 
   const handleCloseClick = (event) => {
     event.preventDefault();
-    // fetchUserEmailInfo();
-    console.log('clicked');
     window.open("about:blank", "_self");
     window.close();
   }
@@ -143,29 +147,47 @@ function Form({passProps}) {
     setEmail('');
   }
 
-  const handleExperienceClick = (event) => {
+  // Handle registration when user visits first time
+  useEffect(() => {
+    const handleRegistration = async () => {
+      if (occurrences === 0) {
+        await registerUser();
+        setRegistration(true);
+      }
+    };
+  
+    if (occurrences !== null) {
+      handleRegistration();
+    }
+  }, [occurrences]);
+
+  const handleExperienceClick = async (event) => {
     event.preventDefault();
     setValidationError('');
     if (!email || !firstSelection || !secondSelection) {
       alert('Fill in the form completely!');
     } else {
-      fetchValidateEmail();
-      if (occurrences === 0) {
-        fetchRegisterUser();
-      } else {
-        console.log("Unable to register user");
+      const isValid = await validateEmail();
+      if (isValid) {
+        await getUserEmailInfo();
       }
     }
   }
 
   const handleCheckClick = (event) => {
     event.preventDefault();
-    passProps(email);
+    passProps(email, firstSelection, secondSelection, occurrences);
   }
 
   const handleContributeClick = (event) => {
     event.preventDefault();
-    // TODO
+    const paymentApiUrl = process.env.REACT_APP_PAYMENT_API_URL
+    window.open(paymentApiUrl,  '_blank');
+  }
+  
+  const handleYesClick = (event) => {
+    event.preventDefault();
+    TODO
   }
 
   return (
@@ -174,25 +196,30 @@ function Form({passProps}) {
         <Selection title="Select Second License" selectedValue={secondSelection} data={data} onSelectChange={handleSecondSelection}/>
         <Input type="email" inputValue={email} name="email" id="email" placeholder="Enter your email address" onInputChange={handleInput} />
         
-        {clicked && <Message textColor="text-black" message={`You have used open source license ${occurrences} times`}/> }
+        {showMessage && <Message textColor="text-black" message={`You have used open source license ${occurrences} times`}/> }
         {validationError && <Message textColor="text-red-500" message={validationError}/> }
 
         <div className="flex flex-wrap justify-center md:flex-row md:gap-3 mx-auto">
             <Button type="button" classes="btn-red" name="Close" onButtonClick={handleCloseClick}/>
             <Button type="button" classes="btn-yellow" name="Reset" onButtonClick={handleResetClick}/>
 
-            {(occurrences === null || occurrences === 0) &&
+            {(occurrences === null || occurrences === 0) && (registration === false) &&
               <Button type="submit" classes="btn-green" name="Experience" showIcon="experience" onButtonClick={handleExperienceClick}/>
             }
 
-            {(occurrences >= 1 && occurrences <= 4) &&
+            {(occurrences >= 1 && occurrences <= 6 || registration) &&
               <Button type="submit" classes="btn-green" name="Check" showIcon="check" onButtonClick={handleCheckClick}/>
             }
 
-            {occurrences >= 5 &&
+            {occurrences >=4 && 
               <Button type="submit" classes="btn-green" name="Contribute" onButtonClick={handleContributeClick} />
             }
+
         </div>
+
+        {occurrences >=4 &&
+          <Confirmation message="Do you have a coupon?" handleYesClick={handleYesClick}/>
+        }
     </form>
   )
 }

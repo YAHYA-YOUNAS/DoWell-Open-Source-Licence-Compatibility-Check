@@ -1,9 +1,13 @@
 import React from 'react'
-import Button from './common/Button'
+import Confirmation from './common/Confirmation';
 
 function Result({data, email}) {
 
   const sendEmailUrl = process.env.REACT_APP_SEND_EMAIL_URL;
+  const name = process.env.REACT_APP_EMAIL_NAME
+  const fromName = process.env.REACT_APP_EMAIL_FROM_NAME
+  const fromEmail = process.env.REACT_APP_EMAIL_FROM_EMAIL
+  const subject = process.env.REACT_APP_EMAIL_SUBJECT
   // const uxlivinglabUrl = process.env.REACT_APP_UXLIVINGLAB_URL;
 
   // Function to send email from the API
@@ -14,10 +18,10 @@ function Result({data, email}) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          name:"Yahya",       // TODO: Replace with real
-          fromName:"DoWell UX Living Lab",
-          fromEmail : "yahyayounas80@gmail.com",  // TODO: Replace with real
-          subject : "Open Source License Compatability",
+          name,
+          fromName,
+          fromEmail,
+          subject,
           body : emailBody
         }),
       });
@@ -167,10 +171,8 @@ function Result({data, email}) {
       <p className="text-justify mb-5"><span className="font-bold">Our recommendation:</span> Consult your legal team for license amendments, If not fully compatible, follow conditions and add required liabilities & copyright notices for compliance.</p>
       <hr/>
       <h2 className="text-center md:text-xl my-5">Compatibility Check By Dowell UX Livinglab</h2>
-      <div className="w-fit text-xs sm:text-sm md:text-base mx-auto flex gap-2 items-center ">
-        <p>Do you want to mail this?</p>
-        <Button type="button" classes="btn-lightgreen" name="Yes" onButtonClick={handleYesClick}/>
-      </div>
+
+      <Confirmation message="Do you want to mail this?" handleYesClick={handleYesClick}/>
     </div>
   )
 }

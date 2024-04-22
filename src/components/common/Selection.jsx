@@ -11,7 +11,7 @@ function Selection({title, data, selectedValue, onSelectChange}) {
       required={true}>
         <option value={title} defaultValue="selected">{title}</option>
         {data.map((license) => (
-          <option key={license._id} value={license.softwarelicense.license_name}>{license.softwarelicense.license_name}</option>
+          <option key={license._id} value={license.eventId}>{license.softwarelicense.license_name}</option>
         ))}
     </select>
   )

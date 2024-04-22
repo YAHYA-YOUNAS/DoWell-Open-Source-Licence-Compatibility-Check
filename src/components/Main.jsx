@@ -10,9 +10,12 @@ function Main({handleTryAgainClick}) {
 
   const licencesApiUrl = process.env.REACT_APP_LICENSES_API_URL;
   const licenseApiKey = process.env.REACT_APP_LICENSES_API_KEY;
+  const userId = process.env.REACT_APP_USER_ID
+  const organizationId = process.env.REACT_APP_ORGANIZATION_ID
+  const updateUserUsageUrl = process.env.REACT_APP_UPDATE_USER_USAGE_URL
 
-  // Function to fetch licenses from the API
-  const fetchCheckCompatibility = async () => {
+  // Function to check compatibility from the API
+  const fetchCheckCompatibility = async (firstLicenseEventId, secondLicenseEventId) => {
     try {
       const response = await fetch(licencesApiUrl, {
         method: 'POST',
@@ -22,10 +25,10 @@ function Main({handleTryAgainClick}) {
         },
         body: JSON.stringify({
           action_type: "check-compatibility",
-          license_event_id_one: "FB1010000000166123835456631894",     // TODO update with real
-          license_event_id_two: "FB1010000000167644773552170851",     // TODO update with real
-          user_id: 609,                                               // TODO update with real
-          organization_id: "63cf89a0dcc2a171957b290b"                 // TODO update with real
+          license_event_id_one: firstLicenseEventId,
+          license_event_id_two: secondLicenseEventId,
+          user_id: userId,                                            
+          organization_id: organizationId
         })
       });
       if (!response.ok) {
@@ -38,9 +41,26 @@ function Main({handleTryAgainClick}) {
     }
   };
 
-  const passProps = (email) => {
+  // Function to update user usage from the API
+  const fetchUpdateUserUsage = async (email, occurrences) => {
+    try {
+      const response = await fetch(updateUserUsageUrl + email + '&occurrences=' +  occurrences, {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      const jsonData = await response.json();
+      console.log(jsonData);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const passProps = (email, firstLicenseEventId, secondLicenseEventId, occurrences) => {
     setEmail(email);
-    fetchCheckCompatibility();
+    fetchCheckCompatibility(firstLicenseEventId, secondLicenseEventId);
+    fetchUpdateUserUsage(email, occurrences+1);
   }
   
   return (
