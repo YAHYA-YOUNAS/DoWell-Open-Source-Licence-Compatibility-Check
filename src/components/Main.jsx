@@ -6,6 +6,8 @@ import Result from './Result'
 
 function Main({handleTryAgainClick}) {
   const [data, setData] = useState(null);
+  const [email, setEmail] = useState('');
+
   const licencesApiUrl = process.env.REACT_APP_LICENSES_API_URL;
   const licenseApiKey = process.env.REACT_APP_LICENSES_API_KEY;
 
@@ -36,8 +38,8 @@ function Main({handleTryAgainClick}) {
     }
   };
 
-  const handleCheckClick = (event) => {
-    event.preventDefault();
+  const passProps = (email) => {
+    setEmail(email);
     fetchCheckCompatibility();
   }
   
@@ -51,11 +53,11 @@ function Main({handleTryAgainClick}) {
         </div>
       </div>
 
-      <Form handleCheckClick={handleCheckClick}/>
+      <Form passProps={passProps}/>
 
       {data && 
         <>
-          <Result data={data}/>
+          <Result data={data} email={email}/>
           <div className="w-fit mx-auto mt-5 md:mt-10">
             <Button type="button" classes="btn-green" name="Try Again" onButtonClick={handleTryAgainClick}/>
           </div>    

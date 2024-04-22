@@ -55,7 +55,8 @@ h6 {
     background-color: #D6BB41;
 }
 
-.btn-green {
+.btn-green,
+.email-footer-bg {
     background-color: #005734;
 }
 

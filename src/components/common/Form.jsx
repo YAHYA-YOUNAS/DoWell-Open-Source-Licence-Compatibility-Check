@@ -4,7 +4,7 @@ import Input from './Input'
 import Button from './Button'
 import Message from './Message'
 
-function Form({handleCheckClick}) {
+function Form({passProps}) {
   const [data, setData] = useState([]);
   const [firstSelection, setFirstSelection] = useState('');
   const [secondSelection, setSecondSelection] = useState('');
@@ -16,7 +16,7 @@ function Form({handleCheckClick}) {
   const licencesApiUrl = process.env.REACT_APP_LICENSES_API_URL;
   const licenseApiKey = process.env.REACT_APP_LICENSES_API_KEY;
   const userEmailInfoUrl = process.env.REACT_APP_USER_EMAIL_INFO_URL;
-  const validateEmail = process.env.REACT_APP_VALIDATE_EMAIL;
+  const validateEmailUrl = process.env.REACT_APP_VALIDATE_EMAIL_URL;
   const registerUserUrl = process.env.REACT_APP_REGISTER_USER_URL;
   const productNumber = process.env.REACT_APP_PRODUCT_NUMBER;
   
@@ -60,7 +60,7 @@ function Form({handleCheckClick}) {
   // Function to validate user email from the API
   const fetchValidateEmail = async () => {
     try {
-      const response = await fetch(validateEmail, {
+      const response = await fetch(validateEmailUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -147,14 +147,20 @@ function Form({handleCheckClick}) {
     event.preventDefault();
     setValidationError('');
     if (!email || !firstSelection || !secondSelection) {
-      alert('Fill in the form completely!')
-    }
-    fetchValidateEmail();
-    if (occurrences === 0) {
-      fetchRegisterUser();
+      alert('Fill in the form completely!');
     } else {
-      console.log("Unable to register user");
+      fetchValidateEmail();
+      if (occurrences === 0) {
+        fetchRegisterUser();
+      } else {
+        console.log("Unable to register user");
+      }
     }
+  }
+
+  const handleCheckClick = (event) => {
+    event.preventDefault();
+    passProps(email);
   }
 
   const handleContributeClick = (event) => {
