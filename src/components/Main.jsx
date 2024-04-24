@@ -36,11 +36,10 @@ function Main({handleTryAgainClick}) {
           <Result data={data} email={email}/>
           <div className="w-fit mx-auto mt-5 md:mt-10">
             <Button type="button" classes="btn-green" name="Try Again" onButtonClick={handleTryAgainClick}/>
-          </div>    
+          </div>
         </>
       }
     </>
-   
   )
 }
 
