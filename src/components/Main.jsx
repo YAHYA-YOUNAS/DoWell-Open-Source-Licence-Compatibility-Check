@@ -1,22 +1,16 @@
 import React, { useState } from 'react'
-import Result from './Result'
 import Form from './common/Form'
 import Image from './common/Image'
-import Button from './common/Button'
-import { checkCompatibility, updateUserUsage } from '../apiCalls';
+import ResultModal from './common/ResultModal'
 
 function Main({handleTryAgainClick}) {
-  const [data, setData] = useState(null);
-  const [email, setEmail] = useState('');
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  const passProps = async (email, firstLicenseEventId, secondLicenseEventId, occurrences) => {
-    setEmail(email);
-    setLoading(true);
-    const jsonData = await checkCompatibility(firstLicenseEventId, secondLicenseEventId);
-    setData(jsonData);
-    await updateUserUsage(email, occurrences+1);
-    setLoading(false);
+  const passProps = (userData) => {
+    setUserData(userData);
+    setShowModal(true);
   }
   
   return (
@@ -31,14 +25,7 @@ function Main({handleTryAgainClick}) {
 
       <Form loading={loading} setLoading={setLoading} passProps={passProps}/>
 
-      {data && 
-        <>
-          <Result data={data} email={email}/>
-          <div className="w-fit mx-auto mt-5 md:mt-10">
-            <Button type="button" classes="btn-green" name="Try Again" onButtonClick={handleTryAgainClick}/>
-          </div>
-        </>
-      }
+      { showModal && <ResultModal userData={userData} loading={loading} setLoading={setLoading} setShowModal={setShowModal} handleTryAgainClick={handleTryAgainClick}/>}
     </>
   )
 }

@@ -4,7 +4,7 @@ import Button from "./Button";
 import Message from "./Message";
 import { redeemCoupon } from '../../apiCalls';
 
-function Modal({email, loading, setLoading, setInvokeCheckBtn, setShowModal}) {
+function CouponModal({email, loading, setLoading, setCouponModal}) {
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -23,7 +23,6 @@ function Modal({email, loading, setLoading, setInvokeCheckBtn, setShowModal}) {
             const data = await redeemCoupon(email, code);
             if (data.success) {
                 setMessage(data.message);
-                setInvokeCheckBtn(true)
             } else {
                 setError(data.message)
             }
@@ -33,7 +32,7 @@ function Modal({email, loading, setLoading, setInvokeCheckBtn, setShowModal}) {
 
     const handleCloseClick = (event) => {
         event.preventDefault();
-        setShowModal(false);
+        setCouponModal(false);
     }
 
     return (
@@ -63,4 +62,4 @@ function Modal({email, loading, setLoading, setInvokeCheckBtn, setShowModal}) {
     );
 }
 
-export default Modal
+export default CouponModal

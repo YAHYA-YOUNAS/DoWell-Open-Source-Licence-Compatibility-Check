@@ -74,3 +74,10 @@ h6 {
     padding: 3px 10px;
     font-weight: normal;
 }
+
+.btn-tryagain {
+    background-color: #005734;
+    margin: 10px 15px;
+    font-weight: 400;
+    padding: 8px 10px;
+}

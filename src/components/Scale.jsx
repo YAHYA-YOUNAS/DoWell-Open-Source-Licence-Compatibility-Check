@@ -26,7 +26,7 @@ function Scale () {
 
   return (
     <div id="scale" className="mt-10">
-      <div className="text-sm md:text-base font-poppins py-2 rounded text-center bg-neutral-100">
+      <div className="text-sm font-poppins py-4 rounded text-center bg-neutral-100">
         <h1>On a scale of 0-10, how likely are you to recommend <span className="font-bold text-green-800">{appName}</span>  to a friend or a colleague?</h1>
         <div className="flex flex-wrap justify-center">
           {Array.from({ length: 11 }, (_, i) => (
