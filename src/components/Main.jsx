@@ -13,7 +13,7 @@ function Main({handleTryAgainClick}) {
     setEmail(email);
     const jsonData = await checkCompatibility(firstLicenseEventId, secondLicenseEventId);
     setData(jsonData);
-    updateUserUsage(email, occurrences+1);
+    await updateUserUsage(email, occurrences+1);
   }
   
   return (

@@ -154,11 +154,7 @@ export const redeemCoupon = async (email, code) => {
             throw new Error(`API request failed with status ${response.status}`);
         }
         const jsonData = await response.json();
-        if (jsonData.success) {
-            return true
-        } else {
-            return false
-        }
+        return jsonData;
     } catch (error) {
         console.log(error.message);
     }

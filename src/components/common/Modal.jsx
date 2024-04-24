@@ -13,18 +13,18 @@ function Modal({email, setInvokeCheckBtn, setShowModal}) {
         setCode(value);
     }
 
-    const handleRedeemClick = (event) => {
+    const handleRedeemClick = async(event) => {
         event.preventDefault();
         if (!code) {
             setError('Please enter your coupon code')
         } else {
             setError('');
-            const response = redeemCoupon(email, code);
-            if (response) {
-                setMessage(jsonData.message);
+            const data = await redeemCoupon(email, code);
+            if (data.success) {
+                setMessage(data.message);
                 setInvokeCheckBtn(true)
             } else {
-                setError(jsonData.message)
+                setError(data.message)
             }
         }
     }
