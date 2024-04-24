@@ -7,7 +7,7 @@ import Selection from './Selection'
 import Confirmation from './Confirmation'
 import { getLicenses, validateEmail, getUserEmailInfo, registerUser } from '../../apiCalls';
 
-function Form({passProps}) {
+function Form({loading, setLoading, passProps}) {
   const [data, setData] = useState([]);
   const [firstSelection, setFirstSelection] = useState('');
   const [secondSelection, setSecondSelection] = useState('');
@@ -69,6 +69,8 @@ function Form({passProps}) {
     setFirstSelection('');
     setSecondSelection('');
     setEmail('');
+    setShowMessage(false);
+    setOccurrences(null);
   }
 
   const handleExperienceClick = async (event) => {
@@ -77,14 +79,16 @@ function Form({passProps}) {
     if (!email || !firstSelection || !secondSelection) {
       alert('Fill in the form completely!');
     } else {
+      setLoading(true);
       const jsonData = await validateEmail(email);
       if (jsonData.success) {
         const data = await getUserEmailInfo(email);
         setOccurrences(data.occurrences);
         setShowMessage(true);
       } else {
-        return setValidationError(jsonData.message);
+        setValidationError(jsonData.message);
       }
+      setLoading(false);
     }
   }
 
@@ -118,11 +122,11 @@ function Form({passProps}) {
             <Button type="button" classes="btn-yellow" name="Reset" onButtonClick={handleResetClick}/>
 
             {(occurrences === null || occurrences === 0) && (invokeCheckBtn === false) &&
-              <Button type="submit" classes="btn-green" name="Experience" showIcon="experience" onButtonClick={handleExperienceClick}/>
+              <Button type="submit" classes="btn-green" name="Experience" loading={loading} showIcon="experience" onButtonClick={handleExperienceClick}/>
             }
 
             {(occurrences >= 1 && occurrences <= 6 || invokeCheckBtn) &&
-              <Button type="submit" classes="btn-green" name="Check" showIcon="check" onButtonClick={handleCheckClick}/>
+              <Button type="submit" classes="btn-green" name="Check" showIcon="check" loading={loading} onButtonClick={handleCheckClick}/>
             }
 
             {occurrences >=4 && 
@@ -133,7 +137,7 @@ function Form({passProps}) {
       
         {occurrences >=4 && <Confirmation message="Do you have a coupon?" handleYesClick={handleYesClick}/> }
 
-        {showModal ? <Modal email={email} setInvokeCheckBtn={setInvokeCheckBtn} setShowModal={setShowModal} /> : null}
+        {showModal ? <Modal email={email} loading={loading} setLoading={setLoading} setInvokeCheckBtn={setInvokeCheckBtn} setShowModal={setShowModal} /> : null}
         
     </form>
   )

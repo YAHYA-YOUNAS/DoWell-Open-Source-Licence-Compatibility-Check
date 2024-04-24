@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Button from './common/Button';
 import Message from './common/Message';
+import { scaleAPI } from '../apiCalls';
 
 function Scale () {
   const [feedback, setFeedback] = useState(false);
 
-  const recommendationScaleUrl = process.env.REACT_APP_RECOMMENDATION_SCALE_URL;
   const appName = process.env.REACT_APP_NAME;
 
   // Display Feedback for 5 seconds
@@ -16,24 +16,12 @@ function Scale () {
     }
   }, [feedback]);
 
-  // Scale API Call
-  const scaleAPI = async (index) => {
-    try {
-      const response = await fetch(recommendationScaleUrl + index, {
-        method: 'GET'
-      });
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-      setFeedback(true);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   const handleClick = async (event, index) => {
     event.preventDefault();
-    scaleAPI(index);
+    const response = await scaleAPI(index);
+    if (response) {
+      setFeedback(true);
+    }
   };
 
   return (

@@ -8,12 +8,15 @@ import { checkCompatibility, updateUserUsage } from '../apiCalls';
 function Main({handleTryAgainClick}) {
   const [data, setData] = useState(null);
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const passProps = async (email, firstLicenseEventId, secondLicenseEventId, occurrences) => {
     setEmail(email);
+    setLoading(true);
     const jsonData = await checkCompatibility(firstLicenseEventId, secondLicenseEventId);
     setData(jsonData);
     await updateUserUsage(email, occurrences+1);
+    setLoading(false);
   }
   
   return (
@@ -26,7 +29,7 @@ function Main({handleTryAgainClick}) {
         </div>
       </div>
 
-      <Form passProps={passProps}/>
+      <Form loading={loading} setLoading={setLoading} passProps={passProps}/>
 
       {data && 
         <>

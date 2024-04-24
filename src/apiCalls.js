@@ -8,6 +8,14 @@ const redeemCouponUrl = process.env.REACT_APP_REDEEM_COUPON_URL;
 const validateEmailUrl = process.env.REACT_APP_VALIDATE_EMAIL_URL;
 const userEmailInfoUrl = process.env.REACT_APP_USER_EMAIL_INFO_URL;
 const updateUserUsageUrl = process.env.REACT_APP_UPDATE_USER_USAGE_URL;
+const recommendationScaleUrl = process.env.REACT_APP_RECOMMENDATION_SCALE_URL;
+
+// Email global variables
+const name = process.env.REACT_APP_EMAIL_NAME;
+const fromName = process.env.REACT_APP_EMAIL_FROM_NAME;
+const fromEmail = process.env.REACT_APP_EMAIL_FROM_EMAIL;
+const subject = process.env.REACT_APP_EMAIL_SUBJECT;
+const sendEmailUrl = process.env.REACT_APP_SEND_EMAIL_URL;
 
 // Get all licenses from the API
 export const getLicenses = async () => {
@@ -138,6 +146,31 @@ export const updateUserUsage = async (email, occurrences) => {
     }
 };
 
+// Send email from the API
+export const sendEmail = async (email, emailBody) => {
+  try {
+    const response = await fetch(sendEmailUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        name,
+        fromName,
+        fromEmail,
+        subject,
+        body : emailBody
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    const jsonData = await response.json();
+    return jsonData;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 // Redeem coupon from the API
 export const redeemCoupon = async (email, code) => {
     try {
@@ -158,4 +191,19 @@ export const redeemCoupon = async (email, code) => {
     } catch (error) {
         console.log(error.message);
     }
+};
+
+ // Scale API Call
+export const scaleAPI = async (index) => {
+  try {
+    const response = await fetch(recommendationScaleUrl + index, {
+      method: 'GET'
+    });
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    return true;
+  } catch (error) {
+    console.log(error.message);
+  }
 };

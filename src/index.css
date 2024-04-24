@@ -41,6 +41,8 @@ h6 {
     color: white;
     cursor: pointer;
     border-radius: 3px;
+    display: flex;
+    align-items: center;
 }
 
 .btn:hover {

@@ -4,7 +4,7 @@ import Button from "./Button";
 import Message from "./Message";
 import { redeemCoupon } from '../../apiCalls';
 
-function Modal({email, setInvokeCheckBtn, setShowModal}) {
+function Modal({email, loading, setLoading, setInvokeCheckBtn, setShowModal}) {
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -19,6 +19,7 @@ function Modal({email, setInvokeCheckBtn, setShowModal}) {
             setError('Please enter your coupon code')
         } else {
             setError('');
+            setLoading(true);
             const data = await redeemCoupon(email, code);
             if (data.success) {
                 setMessage(data.message);
@@ -26,6 +27,7 @@ function Modal({email, setInvokeCheckBtn, setShowModal}) {
             } else {
                 setError(data.message)
             }
+            setLoading(false);
         }
     }
 
@@ -50,7 +52,7 @@ function Modal({email, setInvokeCheckBtn, setShowModal}) {
                         <Input type="text" inputValue={code} name="text" id="text" placeholder="Enter your code" onInputChange={handleInput} />
                     </div>
                     <div className="flex gap-5 items-center justify-center p-6 border-t border-solid border-blueGray-200 rounded-b">
-                        <Button type="button" classes="btn-lightgreen" name="Redeem" onButtonClick={handleRedeemClick}/>
+                        <Button type="button" classes="btn-lightgreen" name="Redeem" loading={loading} onButtonClick={handleRedeemClick}/>
                         <Button type="button" classes="btn-lightred" name="Close" onButtonClick={handleCloseClick}/>
                     </div>
                     </div>
