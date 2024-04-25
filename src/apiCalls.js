@@ -172,14 +172,14 @@ export const sendEmail = async (email, emailBody) => {
 };
 
 // Redeem coupon from the API
-export const redeemCoupon = async (email, code) => {
+export const redeemCoupon = async (email, coupon) => {
     try {
         const response = await fetch(redeemCouponUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email,
-                coupon : code,
+                coupon,
                 product_number : productNumber
             }),
         });

@@ -4,8 +4,9 @@ import Message from './common/Message';
 import Confirmation from './common/Confirmation';
 import { sendEmail } from '../apiCalls';
 
-function Result({data, email, loading, setLoading}) {
+function Result({data, email}) {
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Display Email confirmation for 5 seconds
   useEffect(() => {
@@ -95,11 +96,11 @@ function Result({data, email, loading, setLoading}) {
         </div>
       </body>
     </html>`;
-    const jsonData = await sendEmail(email, emailBody);
-    if (jsonData.success) {
+    const response = await sendEmail(email, emailBody);
+    if (response.success) {
       setMessage(true);
     } else {
-      console.log(jsonData.message)
+      console.log(response.message)
     }
     setLoading(false);
   }

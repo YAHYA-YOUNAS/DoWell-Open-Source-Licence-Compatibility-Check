@@ -5,8 +5,9 @@ import Message from './Message'
 import Selection from './Selection'
 import { getLicenses, validateEmail, getUserEmailInfo } from '../../apiCalls';
 
-function Form({loading, setLoading, passProps}) {
+function Form({passProps}) {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [firstSelection, setFirstSelection] = useState('');
   const [secondSelection, setSecondSelection] = useState('');
   const [email, setEmail] = useState('');
@@ -46,12 +47,12 @@ function Form({loading, setLoading, passProps}) {
       alert('Fill in the form completely!');
     } else {
       setLoading(true);
-      const jsonData = await validateEmail(email);
-      if (jsonData.success) {
-        const data = await getUserEmailInfo(email);
-        passProps({email, firstSelection, secondSelection, occurrences : data.occurrences});
+      const response = await validateEmail(email);
+      if (response.success) {
+        const emailInfodata = await getUserEmailInfo(email);
+        passProps({email, firstSelection, secondSelection, occurrences : emailInfodata.occurrences});
       } else {
-        setValidationError(jsonData.message);
+        setValidationError(response.message);
       }
       setLoading(false);
     }
