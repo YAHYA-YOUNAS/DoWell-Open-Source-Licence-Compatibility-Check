@@ -3,6 +3,7 @@ const productNumber = process.env.REACT_APP_PRODUCT_NUMBER;
 const licenseApiKey = process.env.REACT_APP_LICENSES_API_KEY;
 const organizationId = process.env.REACT_APP_ORGANIZATION_ID;
 const licencesApiUrl = process.env.REACT_APP_LICENSES_API_URL;
+const userDetailsUrl = process.env.REACT_APP_USER_DETAILS_URL;
 const registerUserUrl = process.env.REACT_APP_REGISTER_USER_URL;
 const redeemCouponUrl = process.env.REACT_APP_REDEEM_COUPON_URL;
 const validateEmailUrl = process.env.REACT_APP_VALIDATE_EMAIL_URL;
@@ -103,6 +104,28 @@ export const registerUser = async (email) => {
     }
 };
 
+// Get user details from the API
+export const getUserDetails = async (email, occurrences) => {
+  try {
+    const response = await fetch(userDetailsUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        product_number : productNumber,
+        occurrences
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    const jsonData = await response.json();
+    return jsonData;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 // Check compatibility from the API
 export const checkCompatibility = async (firstLicenseEventId, secondLicenseEventId) => {
     try {
@@ -133,14 +156,12 @@ export const checkCompatibility = async (firstLicenseEventId, secondLicenseEvent
 // Update user usage from the API
 export const updateUserUsage = async (email, occurrences) => {
     try {
-        const response = await fetch(updateUserUsageUrl + email + '&occurrences=' +  occurrences, {
+        const response = await fetch(updateUserUsageUrl + email + '&occurrences=' + occurrences, {
             method: 'GET',
         });
         if (!response.ok) {
             throw new Error(`API request failed with status ${response.status}`);
         }
-        const jsonData = await response.json();
-        console.log(jsonData);
     } catch (error) {
         console.log(error.message);
     }

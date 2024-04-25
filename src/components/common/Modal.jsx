@@ -5,36 +5,44 @@ import Header from "../Header";
 import Result from "../Result";
 import Message from "./Message";
 import Confirmation from "./Confirmation";
-import { checkCompatibility, updateUserUsage, registerUser, redeemCoupon } from '../../apiCalls';
+import { checkCompatibility, updateUserUsage, registerUser, getUserDetails, redeemCoupon } from '../../apiCalls';
 
 function Modal({userData, setShowModal, handleTryAgainClick}) {
     const [email, ] = useState(userData.email);
     const [firstSelection, ] = useState(userData.firstSelection);
     const [secondSelection, ] = useState(userData.secondSelection);
-    const [occurrences, ] = useState(userData.occurrences);
+    const [emailOccurrences, ] = useState(userData.occurrences);
+    const [occurrences, setOccurrences] = useState(null);
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [showResult, setShowResult] = useState(false);
     const [showCoupon, setShowCoupon] = useState(false);
     const [couponCode, setCouponCode] = useState('');
+    const [userDetailsError, setUserDetailsError] = useState('');
     const [couponError, setCouponError] = useState('');
     const hasFetchedData = useRef(false);
 
     const appName = process.env.REACT_APP_NAME;
 
-    // Registration when user visits for the first time
+    // Register the user if he visits for the first time, and get number of used time
     useEffect(() => {
-        const handleRegistration = async () => {
-            if (occurrences === 0) {
+        const checkOccurrences = async () => {
+            if (emailOccurrences === 0) {
                 await registerUser(email);
+            }
+            const userDetails = await getUserDetails(email, emailOccurrences);
+            if (userDetails.success) {
+                setOccurrences(userDetails.response[0].used_time);
+            } else {
+                setUserDetailsError(userDetails.message);
             }
         };
 
         if (hasFetchedData.current === false) {         // to avoid API call twice
-        handleRegistration();
+        checkOccurrences();
         hasFetchedData.current = true;
         } 
-    }, [occurrences]);
+    }, [emailOccurrences]);
 
 
     // Get compatibility results from API
@@ -49,7 +57,9 @@ function Modal({userData, setShowModal, handleTryAgainClick}) {
 
     const handleCheckClick = (event) => {
         event.preventDefault();
-        getResults();
+        if (occurrences) {
+            getResults();
+        }
     }
 
     const handleContributeClick = (event) => {
@@ -88,7 +98,14 @@ function Modal({userData, setShowModal, handleTryAgainClick}) {
                     <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none max-h-screen overflow-y-auto">
                         <Header classes="w-36 mx-auto"/>
                         <h2 className="text-lg font-semibold text-center pt-5">{appName}</h2>
-                        <Message classes="text-black w-50 mx-auto my-5" message={`You have used open source license ${occurrences} times`}/>
+
+                        {userDetailsError ? 
+                            <Message classes="text-red-500 font-bold w-50 mx-auto px-4 m-4" message={userDetailsError}/>
+                        : 
+                            <>
+                                {(occurrences || occurrences === 0) && <Message classes="text-black w-50 mx-auto my-5" message={`You have used open source license ${occurrences} times`}/> }
+                            </> 
+                        }
                         
                         {showResult ?
                             <>
@@ -101,7 +118,7 @@ function Modal({userData, setShowModal, handleTryAgainClick}) {
                             <div className="flex gap-5 items-center justify-center p-6 border-t border-solid border-blueGray-200 rounded-b">
                                 <Button type="button" classes="btn-lightred" name="Cancel" onButtonClick={() => setShowModal(false)}/>
                             
-                                {(occurrences >= 0 && occurrences <= 6) &&
+                                {(occurrences >= 0 && occurrences <= 6 && !userDetailsError) &&
                                     <Button type="button" classes="btn-lightgreen" name="Check" showIcon="check" loading={loading} onButtonClick={handleCheckClick}/>
                                 }
 

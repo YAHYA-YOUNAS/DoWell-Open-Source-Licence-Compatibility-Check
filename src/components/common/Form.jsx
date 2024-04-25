@@ -44,7 +44,7 @@ function Form({passProps}) {
     event.preventDefault();
     setValidationError('');
     if (!email || !firstSelection || !secondSelection) {
-      alert('Fill in the form completely!');
+      setValidationError('Fill in the form completely!');
     } else {
       setLoading(true);
       const response = await validateEmail(email);
@@ -60,16 +60,15 @@ function Form({passProps}) {
 
   return (
     <form className="flex flex-col gap-4 py-8">
+        {validationError && <Message classes="text-red-500 font-bold w-50 mx-auto px-4" message={validationError}/> }
         <Selection title="Select First License" selectedValue={firstSelection} data={data} onSelectChange={(value) => setFirstSelection(value)}/>
         <Selection title="Select Second License" selectedValue={secondSelection} data={data} onSelectChange={(value) => setSecondSelection(value)}/>
         <Input type="email" inputValue={email} name="email" id="email" placeholder="Enter your email address" onInputChange={(value) => setEmail(value)} />
 
-        {validationError && <Message classes="text-red-500" message={validationError}/> }
-
         <div className="flex flex-wrap justify-center md:flex-row md:gap-3 mx-auto">
             <Button type="button" classes="btn-red" name="Close" onButtonClick={handleCloseClick}/>
             <Button type="button" classes="btn-yellow" name="Reset" onButtonClick={handleResetClick}/>
-            <Button type="submit" classes="btn-green" name="Experience" loading={loading} showIcon="experience" onButtonClick={handleExperienceClick}/>
+            <Button type="button" classes="btn-green" name="Experience" loading={loading} showIcon="experience" onButtonClick={handleExperienceClick}/>
         </div>
     </form>
   )
