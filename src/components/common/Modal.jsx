@@ -57,9 +57,7 @@ function Modal({userData, setShowModal, handleTryAgainClick}) {
 
     const handleCheckClick = (event) => {
         event.preventDefault();
-        if (occurrences) {
-            getResults();
-        }
+        getResults();
     }
 
     const handleContributeClick = (event) => {
